@@ -87,73 +87,68 @@ function Dashboard() {
           </Button>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
-          {/* Input */}
-          <Card className="shadow-soft">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Wand2 className="h-5 w-5 text-teal" /> Your startup idea
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-5">
+        <Card className="shadow-soft">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Wand2 className="h-5 w-5 text-teal" /> Your startup idea
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            <div className="space-y-1.5">
+              <Label htmlFor="idea">Describe your idea</Label>
+              <Textarea
+                id="idea"
+                value={idea}
+                onChange={(e) => setIdea(e.target.value)}
+                rows={5}
+                placeholder="e.g. A WhatsApp-first grocery delivery app for Tier 2 cities with COD support and regional language UI…"
+              />
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-[1fr_1fr_auto]">
               <div className="space-y-1.5">
-                <Label htmlFor="idea">Describe your idea</Label>
-                <Textarea
-                  id="idea"
-                  value={idea}
-                  onChange={(e) => setIdea(e.target.value)}
-                  rows={7}
-                  placeholder="e.g. A WhatsApp-first grocery delivery app for Tier 2 cities with COD support and regional language UI…"
-                />
+                <Label>Target city tier</Label>
+                <Select value={tier} onValueChange={(v) => setTier(v as typeof tier)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Tier 1">Tier 1 (Mumbai, Delhi, Bangalore…)</SelectItem>
+                    <SelectItem value="Tier 2">Tier 2 (Pune, Jaipur, Lucknow…)</SelectItem>
+                    <SelectItem value="Tier 3">Tier 3 (Bharat & smaller towns)</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <Label>Target city tier</Label>
-                  <Select value={tier} onValueChange={(v) => setTier(v as typeof tier)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Tier 1">Tier 1 (Mumbai, Delhi, Bangalore…)</SelectItem>
-                      <SelectItem value="Tier 2">Tier 2 (Pune, Jaipur, Lucknow…)</SelectItem>
-                      <SelectItem value="Tier 3">Tier 3 (Bharat & smaller towns)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Audience</Label>
-                  <Select value={audience} onValueChange={(v) => setAudience(v as typeof audience)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="B2C">B2C — selling to consumers</SelectItem>
-                      <SelectItem value="B2B">B2B — selling to businesses</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="space-y-1.5">
+                <Label>Audience</Label>
+                <Select value={audience} onValueChange={(v) => setAudience(v as typeof audience)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="B2C">B2C — selling to consumers</SelectItem>
+                    <SelectItem value="B2B">B2B — selling to businesses</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-
-              <Button
-                onClick={handleGenerate}
-                disabled={loading}
-                className="w-full bg-gradient-primary text-primary-foreground hover:opacity-90"
-                size="lg"
-              >
-                {loading ? (
-                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating your report…</>
-                ) : (
-                  <><Sparkles className="mr-2 h-4 w-4" /> Generate HeadStart Report</>
-                )}
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Unit Economics */}
-          <UnitEconomics />
-        </div>
+              <div className="flex items-end">
+                <Button
+                  onClick={handleGenerate}
+                  disabled={loading}
+                  className="w-full bg-gradient-primary text-primary-foreground hover:opacity-90 sm:w-auto"
+                  size="lg"
+                >
+                  {loading ? (
+                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating…</>
+                  ) : (
+                    <><Sparkles className="mr-2 h-4 w-4" /> Generate Report</>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Results */}
         <div className="mt-8">
           {loading && <LoadingSkeleton />}
-          {report && <Results report={report} />}
+          {report && <ResultsDashboard report={report} />}
           {!loading && !report && <EmptyState />}
         </div>
       </main>
@@ -170,8 +165,8 @@ function EmptyState() {
         </div>
         <h3 className="text-lg font-semibold">Your report will appear here</h3>
         <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-          Fill in your idea above and hit “Generate HeadStart Report”. We'll synthesize TAM/SAM/SOM,
-          competitors, and your Swadeshi stack.
+          Fill in your idea above and hit "Generate Report". You'll get a 6-tab dashboard:
+          Market, Competitors, Product, Brand, Data, and Content.
         </p>
       </CardContent>
     </Card>
@@ -187,7 +182,7 @@ function LoadingSkeleton() {
           <span className="font-medium">Analyzing Indian market data…</span>
         </div>
         <div className="space-y-3">
-          {["Scanning competitors", "Modeling unit economics", "Pulling Swadeshi stack"].map((t, i) => (
+          {["Scanning competitors", "Modeling unit economics", "Drafting brand & content"].map((t, i) => (
             <div key={t} className="flex items-center gap-3 text-sm text-muted-foreground">
               <div className="h-1.5 w-full overflow-hidden rounded-full bg-border">
                 <div
@@ -204,96 +199,3 @@ function LoadingSkeleton() {
   );
 }
 
-function Results({ report }: { report: GeneratedOutputs }) {
-  return (
-    <div className="space-y-6">
-      {/* TAM SAM SOM */}
-      <Card className="shadow-soft">
-        <CardHeader>
-          <CardTitle>Market opportunity (₹ Cr)</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-3">
-          <MarketStat label="TAM" sub="Total Addressable Market" value={report.market_data.tam} tone="saffron" />
-          <MarketStat label="SAM" sub="Serviceable Addressable Market" value={report.market_data.sam} tone="teal" />
-          <MarketStat label="SOM" sub="Serviceable Obtainable (Yr 1)" value={report.market_data.som} tone="navy" />
-        </CardContent>
-      </Card>
-
-      {/* Competitors */}
-      <Card className="shadow-soft">
-        <CardHeader>
-          <CardTitle>India-specific competitive benchmark</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Company</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Funding</TableHead>
-                <TableHead>Monthly users</TableHead>
-                <TableHead>Pricing</TableHead>
-                <TableHead>Their weakness</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {report.competitors.map((c) => (
-                <TableRow key={c.name}>
-                  <TableCell className="font-medium">{c.name}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={c.type === "Unicorn" ? "border-saffron/50 bg-saffron/10" : "border-teal/50 bg-teal/10"}
-                    >
-                      {c.type}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{c.funding}</TableCell>
-                  <TableCell>{c.monthly_users}</TableCell>
-                  <TableCell>{c.pricing}</TableCell>
-                  <TableCell className="text-muted-foreground">{c.weakness}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      {/* Swadeshi stack */}
-      <Card className="shadow-soft">
-        <CardHeader>
-          <CardTitle>Low-Code Swadeshi Stack</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {report.swadeshi_stack.map((s) => (
-            <div key={s.name} className="rounded-xl border bg-muted/30 p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <div className="font-semibold">{s.name}</div>
-                  <div className="text-xs text-muted-foreground">{s.category}</div>
-                </div>
-                <Badge variant="outline" className="shrink-0 border-teal/50 bg-teal/10 text-xs">
-                  {s.price}
-                </Badge>
-              </div>
-              <p className="mt-3 text-sm text-muted-foreground">{s.why}</p>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-function MarketStat({ label, sub, value, tone }: { label: string; sub: string; value: number; tone: "saffron" | "teal" | "navy" }) {
-  const toneCls = tone === "saffron" ? "text-saffron" : tone === "teal" ? "text-teal" : "text-foreground";
-  return (
-    <div className="rounded-xl border bg-muted/40 p-5">
-      <div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className={`mt-2 text-3xl font-bold ${toneCls}`}>
-        ₹{value.toLocaleString("en-IN")} Cr
-      </div>
-      <div className="mt-1 text-xs text-muted-foreground">{sub}</div>
-    </div>
-  );
-}
