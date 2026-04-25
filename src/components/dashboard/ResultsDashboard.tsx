@@ -313,6 +313,43 @@ function BrandTab({ report }: { report: GeneratedOutputs }) {
           </div>
         ))}
       </div>
+
+      <h3 className="mt-8 mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+        <Sparkles className="h-3.5 w-3.5 text-saffron" />
+        Prompt for logo
+      </h3>
+      <Card className="overflow-hidden border-saffron/30 bg-gradient-to-br from-saffron/5 via-background to-teal/5">
+        <CardContent className="space-y-3 p-5">
+          <p className="text-xs text-muted-foreground">
+            Paste this master prompt into Midjourney, DALL·E, Lovable, or any image generator to get on-brand logo concepts in seconds.
+          </p>
+          <div className="rounded-lg border bg-background/80 p-4 text-sm leading-relaxed">
+            {report.brand.logo_prompt}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              onClick={() => {
+                navigator.clipboard.writeText(report.brand.logo_prompt);
+                toast.success("Logo prompt copied to clipboard");
+              }}
+            >
+              <Copy className="mr-1.5 h-3.5 w-3.5" />
+              Copy prompt
+            </Button>
+            <Button size="sm" variant="outline" asChild>
+              <a
+                href={`https://www.bing.com/images/create?q=${encodeURIComponent(report.brand.logo_prompt)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
+                Try in Image Creator
+              </a>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
