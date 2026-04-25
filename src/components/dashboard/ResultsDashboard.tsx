@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   TrendingUp,
   Swords,
@@ -6,10 +7,15 @@ import {
   Palette,
   BarChart3,
   Megaphone,
+  ExternalLink,
+  Copy,
+  Sparkles,
+  ArrowRight,
   type LucideIcon,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
