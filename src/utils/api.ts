@@ -67,7 +67,7 @@ export interface GeneratedOutputs {
   idea_id: string;
   market_data: MarketData;
   competitors: Competitor[];
-  swadeshi_stack: { name: string; category: string; price: string; why: string }[];
+  swadeshi_stack: { name: string; category: string; price: string; why: string; url: string }[];
   product: ProductPlan;
   brand: BrandKit;
   data: DataInsights;
