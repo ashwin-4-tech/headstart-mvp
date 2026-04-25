@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Loader2, Sparkles, LogOut, Wand2 } from "lucide-react";
+import { Loader2, Sparkles, LogOut, Wand2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -54,11 +54,27 @@ function Dashboard() {
       });
       setReport(r);
       toast.success("Report generated!");
-    } catch {
-      toast.error("Generation failed. Try again.");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Generation failed. Try again.";
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDownload = () => {
+    if (!report) return;
+    const blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    const slug = idea.trim().slice(0, 40).replace(/[^a-z0-9]+/gi, "-").toLowerCase() || "report";
+    a.download = `headstart-${slug}-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success("Report downloaded");
   };
 
   const handleLogout = () => {
