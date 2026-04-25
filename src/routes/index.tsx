@@ -40,11 +40,24 @@ function Landing() {
     <div className="min-h-screen">
       <Navbar />
       <Hero />
+      <SectionDivider />
       <Pillars />
+      <SectionDivider />
       <LocalContext />
+      <SectionDivider />
       <CalculatorPreview />
+      <SectionDivider />
       <Pricing />
+      <SectionDivider />
       <Footer />
+    </div>
+  );
+}
+
+function SectionDivider() {
+  return (
+    <div className="container mx-auto px-4">
+      <div className="h-px w-full bg-white/20" />
     </div>
   );
 }
