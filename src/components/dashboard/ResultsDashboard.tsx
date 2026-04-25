@@ -364,15 +364,33 @@ function ContentTab({ report }: { report: GeneratedOutputs }) {
   );
 }
 
-function MarketStat({ label, sub, value, tone }: { label: string; sub: string; value: number; tone: "saffron" | "teal" | "navy" }) {
+function MarketStat({
+  abbr,
+  label,
+  meaning,
+  value,
+  tone,
+}: {
+  abbr: string;
+  label: string;
+  meaning: string;
+  value: number;
+  tone: "saffron" | "teal" | "navy";
+}) {
   const toneCls = tone === "saffron" ? "text-saffron" : tone === "teal" ? "text-teal" : "text-foreground";
+  const dotCls = tone === "saffron" ? "bg-saffron" : tone === "teal" ? "bg-teal" : "bg-foreground";
   return (
-    <div className="rounded-xl border bg-muted/40 p-5">
-      <div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className={`mt-2 text-3xl font-bold ${toneCls}`}>
+    <div className="flex h-full flex-col rounded-xl border bg-muted/40 p-5">
+      <div className="flex items-center gap-2">
+        <span className={`h-2 w-2 rounded-full ${dotCls}`} />
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          {abbr} · {label}
+        </span>
+      </div>
+      <div className={`mt-3 text-3xl font-bold ${toneCls}`}>
         ₹{value.toLocaleString("en-IN")} Cr
       </div>
-      <div className="mt-1 text-xs text-muted-foreground">{sub}</div>
+      <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{meaning}</p>
     </div>
   );
 }
