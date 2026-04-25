@@ -46,6 +46,7 @@ export interface BrandKit {
   taglines: string[];
   palette: { name: string; hex: string }[];
   tone: string;
+  logo_prompt: string;
 }
 
 export interface DataInsights {
