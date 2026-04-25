@@ -62,19 +62,29 @@ function Dashboard() {
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!report) return;
-    const blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    const slug = idea.trim().slice(0, 40).replace(/[^a-z0-9]+/gi, "-").toLowerCase() || "report";
-    a.download = `headstart-${slug}-${new Date().toISOString().slice(0, 10)}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    toast.success("Report downloaded");
+    try {
+      toast.info("Building your PDF…");
+      const { buildReportPdf } = await import("@/utils/report-pdf");
+      const bytes = await buildReportPdf(report, idea);
+      // Convert to a fresh ArrayBuffer to satisfy Blob's BlobPart typing
+      const buf = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+      const blob = new Blob([buf], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      const slug = idea.trim().slice(0, 40).replace(/[^a-z0-9]+/gi, "-").toLowerCase() || "report";
+      a.download = `headstart-${slug}-${new Date().toISOString().slice(0, 10)}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success("Report downloaded as PDF");
+    } catch (e) {
+      console.error(e);
+      toast.error("Could not build PDF. Try again.");
+    }
   };
 
   const handleLogout = () => {
