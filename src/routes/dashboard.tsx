@@ -164,7 +164,16 @@ function Dashboard() {
         {/* Results */}
         <div className="mt-8">
           {loading && <LoadingSkeleton />}
-          {report && <ResultsDashboard report={report} />}
+          {report && (
+            <>
+              <div className="mb-3 flex justify-end">
+                <Button variant="outline" size="sm" onClick={handleDownload}>
+                  <Download className="mr-1.5 h-4 w-4" /> Download report
+                </Button>
+              </div>
+              <ResultsDashboard report={report} />
+            </>
+          )}
           {!loading && !report && <EmptyState />}
         </div>
       </main>
