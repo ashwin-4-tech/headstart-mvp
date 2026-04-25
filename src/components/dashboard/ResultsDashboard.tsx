@@ -102,9 +102,27 @@ function MarketTab({ report }: { report: GeneratedOutputs }) {
     <div>
       <SectionHeader title="Market opportunity" subtitle="Sized for the Indian market in ₹ Crore." />
       <div className="grid gap-4 md:grid-cols-3">
-        <MarketStat label="TAM" sub="Total Addressable" value={report.market_data.tam} tone="saffron" />
-        <MarketStat label="SAM" sub="Serviceable Addressable" value={report.market_data.sam} tone="teal" />
-        <MarketStat label="SOM" sub="Obtainable (Yr 1)" value={report.market_data.som} tone="navy" />
+        <MarketStat
+          abbr="TAM"
+          label="Total Addressable Market"
+          meaning="The entire revenue opportunity if every potential customer in India bought your product. The ceiling — useful for vision, not for planning."
+          value={report.market_data.tam}
+          tone="saffron"
+        />
+        <MarketStat
+          abbr="SAM"
+          label="Serviceable Addressable Market"
+          meaning="The slice of TAM you can realistically reach with your business model, language, geography and channels (e.g. Tier 1+2 cities, Hindi+English)."
+          value={report.market_data.sam}
+          tone="teal"
+        />
+        <MarketStat
+          abbr="SOM"
+          label="Serviceable Obtainable Market"
+          meaning="The share of SAM you can actually win in Year 1 — given your team, budget and competition. This is your real revenue target."
+          value={report.market_data.som}
+          tone="navy"
+        />
       </div>
       <Card className="mt-6 border-dashed bg-muted/30">
         <CardContent className="p-5 text-sm text-muted-foreground">
