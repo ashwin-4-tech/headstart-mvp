@@ -178,6 +178,7 @@ export async function generateReport(idea: {
         { name: "Cream", hex: "#FFF7ED" },
       ],
       tone: "Warm, confident, regional-friendly. Mix Hinglish in marketing; keep checkout clean English.",
+      logo_prompt: "Design a minimalist, modern vector logo for \"BharatBox\" — a WhatsApp-native marketplace for Bharat (Tier 2/3 India). Concept: a stylized delivery box that subtly forms the letter 'B', with a small saffron-to-teal gradient accent suggesting motion and trust. Style: flat geometric, clean sans-serif wordmark below the mark, generous negative space, no gradients on the wordmark. Color palette: Saffron #FF9933, Teal Trust #0D9488, Indigo Night #1E1B4B on Cream #FFF7ED background. Avoid: clichés like the Indian flag, lotus, taj mahal, cliché 'desi' motifs, drop shadows, 3D, text in Devanagari. Output: a single centered logo on a solid cream background, square 1:1, vector-quality, suitable for an app icon and a website header.",
     },
     data: {
       unit_economics: { ltv: 1592, cac: 450, payback_months: 3 },
