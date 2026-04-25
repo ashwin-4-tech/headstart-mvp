@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   TrendingUp,
   Swords,
@@ -6,10 +7,15 @@ import {
   Palette,
   BarChart3,
   Megaphone,
+  ExternalLink,
+  Copy,
+  Sparkles,
+  ArrowRight,
   type LucideIcon,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -96,9 +102,27 @@ function MarketTab({ report }: { report: GeneratedOutputs }) {
     <div>
       <SectionHeader title="Market opportunity" subtitle="Sized for the Indian market in ₹ Crore." />
       <div className="grid gap-4 md:grid-cols-3">
-        <MarketStat label="TAM" sub="Total Addressable" value={report.market_data.tam} tone="saffron" />
-        <MarketStat label="SAM" sub="Serviceable Addressable" value={report.market_data.sam} tone="teal" />
-        <MarketStat label="SOM" sub="Obtainable (Yr 1)" value={report.market_data.som} tone="navy" />
+        <MarketStat
+          abbr="TAM"
+          label="Total Addressable Market"
+          meaning="The entire revenue opportunity if every potential customer in India bought your product. The ceiling — useful for vision, not for planning."
+          value={report.market_data.tam}
+          tone="saffron"
+        />
+        <MarketStat
+          abbr="SAM"
+          label="Serviceable Addressable Market"
+          meaning="The slice of TAM you can realistically reach with your business model, language, geography and channels (e.g. Tier 1+2 cities, Hindi+English)."
+          value={report.market_data.sam}
+          tone="teal"
+        />
+        <MarketStat
+          abbr="SOM"
+          label="Serviceable Obtainable Market"
+          meaning="The share of SAM you can actually win in Year 1 — given your team, budget and competition. This is your real revenue target."
+          value={report.market_data.som}
+          tone="navy"
+        />
       </div>
       <Card className="mt-6 border-dashed bg-muted/30">
         <CardContent className="p-5 text-sm text-muted-foreground">
@@ -177,16 +201,35 @@ function ProductTab({ report }: { report: GeneratedOutputs }) {
         <Card>
           <CardHeader><CardTitle className="text-base">User flow</CardTitle></CardHeader>
           <CardContent>
-            <ol className="space-y-3">
-              {report.product.user_flow.map((step, i) => (
-                <li key={step} className="flex gap-3 text-sm">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-primary text-xs font-semibold text-primary-foreground">
-                    {i + 1}
-                  </span>
-                  <span>{step}</span>
-                </li>
-              ))}
-            </ol>
+            <div className="flex flex-col gap-2">
+              {report.product.user_flow.map((step, i) => {
+                const isLast = i === report.product.user_flow.length - 1;
+                const tones = [
+                  "from-saffron/20 to-saffron/5 border-saffron/40",
+                  "from-teal/20 to-teal/5 border-teal/40",
+                  "from-primary/20 to-primary/5 border-primary/40",
+                ];
+                const tone = tones[i % tones.length];
+                return (
+                  <div key={step} className="flex flex-col items-stretch">
+                    <div className={cn(
+                      "relative flex items-center gap-3 rounded-xl border bg-gradient-to-br p-3 shadow-sm transition-transform hover:-translate-y-0.5",
+                      tone,
+                    )}>
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-primary text-xs font-bold text-primary-foreground shadow-soft">
+                        {i + 1}
+                      </span>
+                      <span className="text-sm font-medium leading-snug">{step}</span>
+                    </div>
+                    {!isLast && (
+                      <div className="flex justify-center py-1" aria-hidden>
+                        <ArrowRight className="h-4 w-4 rotate-90 text-muted-foreground/60" />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -196,16 +239,28 @@ function ProductTab({ report }: { report: GeneratedOutputs }) {
       </h3>
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
         {report.swadeshi_stack.map((s) => (
-          <div key={s.name} className="rounded-xl border bg-muted/30 p-4">
+          <a
+            key={s.name}
+            href={s.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group block rounded-xl border bg-muted/30 p-4 transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:bg-muted/60 hover:shadow-soft"
+          >
             <div className="flex items-start justify-between gap-3">
-              <div>
-                <div className="font-semibold">{s.name}</div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 font-semibold">
+                  <span className="truncate">{s.name}</span>
+                  <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
+                </div>
                 <div className="text-xs text-muted-foreground">{s.category}</div>
               </div>
               <Badge variant="outline" className="shrink-0 border-teal/50 bg-teal/10 text-xs">{s.price}</Badge>
             </div>
             <p className="mt-3 text-sm text-muted-foreground">{s.why}</p>
-          </div>
+            <div className="mt-3 truncate text-[11px] text-muted-foreground/70">
+              {s.url.replace(/^https?:\/\//, "")}
+            </div>
+          </a>
         ))}
       </div>
     </div>
@@ -258,6 +313,43 @@ function BrandTab({ report }: { report: GeneratedOutputs }) {
           </div>
         ))}
       </div>
+
+      <h3 className="mt-8 mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+        <Sparkles className="h-3.5 w-3.5 text-saffron" />
+        Prompt for logo
+      </h3>
+      <Card className="overflow-hidden border-saffron/30 bg-gradient-to-br from-saffron/5 via-background to-teal/5">
+        <CardContent className="space-y-3 p-5">
+          <p className="text-xs text-muted-foreground">
+            Paste this master prompt into Midjourney, DALL·E, Lovable, or any image generator to get on-brand logo concepts in seconds.
+          </p>
+          <div className="rounded-lg border bg-background/80 p-4 text-sm leading-relaxed">
+            {report.brand.logo_prompt}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              onClick={() => {
+                navigator.clipboard.writeText(report.brand.logo_prompt);
+                toast.success("Logo prompt copied to clipboard");
+              }}
+            >
+              <Copy className="mr-1.5 h-3.5 w-3.5" />
+              Copy prompt
+            </Button>
+            <Button size="sm" variant="outline" asChild>
+              <a
+                href={`https://www.bing.com/images/create?q=${encodeURIComponent(report.brand.logo_prompt)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
+                Try in Image Creator
+              </a>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -340,15 +432,33 @@ function ContentTab({ report }: { report: GeneratedOutputs }) {
   );
 }
 
-function MarketStat({ label, sub, value, tone }: { label: string; sub: string; value: number; tone: "saffron" | "teal" | "navy" }) {
+function MarketStat({
+  abbr,
+  label,
+  meaning,
+  value,
+  tone,
+}: {
+  abbr: string;
+  label: string;
+  meaning: string;
+  value: number;
+  tone: "saffron" | "teal" | "navy";
+}) {
   const toneCls = tone === "saffron" ? "text-saffron" : tone === "teal" ? "text-teal" : "text-foreground";
+  const dotCls = tone === "saffron" ? "bg-saffron" : tone === "teal" ? "bg-teal" : "bg-foreground";
   return (
-    <div className="rounded-xl border bg-muted/40 p-5">
-      <div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className={`mt-2 text-3xl font-bold ${toneCls}`}>
+    <div className="flex h-full flex-col rounded-xl border bg-muted/40 p-5">
+      <div className="flex items-center gap-2">
+        <span className={`h-2 w-2 rounded-full ${dotCls}`} />
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          {abbr} · {label}
+        </span>
+      </div>
+      <div className={`mt-3 text-3xl font-bold ${toneCls}`}>
         ₹{value.toLocaleString("en-IN")} Cr
       </div>
-      <div className="mt-1 text-xs text-muted-foreground">{sub}</div>
+      <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{meaning}</p>
     </div>
   );
 }
