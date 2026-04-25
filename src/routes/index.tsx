@@ -30,7 +30,7 @@ export const Route = createFileRoute("/")({
 const pillars = [
   { icon: Search, title: "Research", desc: "TAM/SAM/SOM tuned for Tier 1, 2, 3 cities — not US-coastal cliches." },
   { icon: FileText, title: "Specs", desc: "Auto-generated PRDs that include UPI, COD, and DLT compliance from day one." },
-  { icon: Palette, title: "Brand", desc: "Identity ideas that resonate locally — Hinglish, regional, or premium." },
+  { icon: Palette, title: "Brand", desc: "Identity ideas that resonate indie — Hinglish, regional, or premium." },
   { icon: BarChart3, title: "Data", desc: "Unit economics modelled on real Indian CAC, LTV and burn benchmarks." },
   { icon: Swords, title: "Competition", desc: "Benchmarks against Indian Unicorns and the bootstrap underdogs you'll actually fight." },
 ];
@@ -59,11 +59,11 @@ function Hero() {
             <Sparkles className="mr-1.5 h-3 w-3 text-teal" /> Built for Bharat. Trained on India.
           </Badge>
           <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
-            Turn your idea into a <span className="text-gradient">powerhouse MVP</span> — the Indian way.
+            Turn your idea into a <span className="text-gradient">POWERHOUSE</span> — the Indian way.
           </h1>
           <p className="mt-6 text-lg text-muted-foreground md:text-xl">
             HeadStart validates your startup with context-aware reports on Indian competitors,
-            unit economics in ₹, and the local tech stack you can actually afford.
+            unit economics in ₹, and the indie tech stack you can actually afford.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button
@@ -168,7 +168,7 @@ function LocalContext() {
       <div className="container mx-auto px-4">
         <div className="grid gap-12 md:grid-cols-2 md:items-center">
           <div>
-            <Badge variant="outline" className="mb-4">Local context</Badge>
+            <Badge variant="outline" className="mb-4">Indie context</Badge>
             <h2 className="text-3xl font-bold md:text-4xl">
               Why HeadStart beats global AI tools for India.
             </h2>
