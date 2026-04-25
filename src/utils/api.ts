@@ -129,11 +129,11 @@ export async function generateReport(idea: {
       },
     ],
     swadeshi_stack: [
-      { name: "Razorpay", category: "Payments", price: "2% / txn", why: "UPI + COD reconciliation built-in" },
-      { name: "Lovable Cloud", category: "Backend", price: "Free tier", why: "Fastest auth + DB for MVPs" },
-      { name: "MSG91", category: "OTP / SMS", price: "₹0.15 / SMS", why: "Best DLT compliance in India" },
-      { name: "Delhivery API", category: "Logistics", price: "Pay per shipment", why: "Best Tier 2/3 pin-code coverage" },
-      { name: "Sarvam AI", category: "AI / NLP", price: "Free trial", why: "Indic language LLMs" },
+      { name: "Razorpay", category: "Payments", price: "2% / txn", why: "UPI + COD reconciliation built-in", url: "https://razorpay.com" },
+      { name: "Lovable Cloud", category: "Backend", price: "Free tier", why: "Fastest auth + DB for MVPs", url: "https://lovable.dev" },
+      { name: "MSG91", category: "OTP / SMS", price: "₹0.15 / SMS", why: "Best DLT compliance in India", url: "https://msg91.com" },
+      { name: "Delhivery API", category: "Logistics", price: "Pay per shipment", why: "Best Tier 2/3 pin-code coverage", url: "https://www.delhivery.com/api-integration" },
+      { name: "Sarvam AI", category: "AI / NLP", price: "Free trial", why: "Indic language LLMs", url: "https://www.sarvam.ai" },
     ],
     product: {
       mvp_features: [
