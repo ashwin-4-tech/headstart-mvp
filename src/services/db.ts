@@ -112,17 +112,17 @@ export async function saveIdeaWithReport(
     .single();
   if (ideaErr) throw ideaErr;
 
-  const { error: repErr } = await supabase.from("generated_reports").insert({
+  const { error: repErr } = await supabase.from("generated_reports").insert([{
     idea_id: ideaRow.id,
     user_id: userId,
-    market_data: report.market_data ?? {},
-    competitors: report.competitors ?? [],
-    swadeshi_stack: report.swadeshi_stack ?? [],
-    product: report.product ?? {},
-    brand: report.brand ?? {},
-    data: report.data ?? {},
-    content: report.content ?? {},
-  });
+    market_data: (report.market_data ?? {}) as never,
+    competitors: (report.competitors ?? []) as never,
+    swadeshi_stack: (report.swadeshi_stack ?? []) as never,
+    product: (report.product ?? {}) as never,
+    brand: (report.brand ?? {}) as never,
+    data: (report.data ?? {}) as never,
+    content: (report.content ?? {}) as never,
+  }]);
   if (repErr) throw repErr;
   return ideaRow.id as string;
 }

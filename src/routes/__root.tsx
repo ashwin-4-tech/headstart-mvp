@@ -1,6 +1,4 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import { ThemeProvider } from "@/hooks/use-theme";
 import { AuthProvider } from "@/hooks/use-auth";
 import "../styles.css";
 
@@ -30,12 +28,9 @@ function RootDocument() {
         <HeadContent />
       </head>
       <body>
-        <ThemeProvider>
-          <AuthProvider>
-            <Outlet />
-          </AuthProvider>
-        </ThemeProvider>
-        <TanStackRouterDevtools position="bottom-right" />
+        <AuthProvider>
+          <Outlet />
+        </AuthProvider>
         <Scripts />
       </body>
     </html>
