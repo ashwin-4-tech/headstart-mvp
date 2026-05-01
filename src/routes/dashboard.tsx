@@ -1,6 +1,6 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Loader2, Sparkles, LogOut, Wand2, Download } from "lucide-react";
+import { Loader2, Sparkles, LogOut, Wand2, Download, Database } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -10,7 +10,9 @@ import {
 } from "@/components/ui/select";
 import { Navbar } from "@/components/Navbar";
 import { ResultsDashboard } from "@/components/dashboard/ResultsDashboard";
-import { auth, generateReport, type GeneratedOutputs, type UserProfile } from "@/utils/api";
+import { generateReport, type GeneratedOutputs } from "@/utils/api";
+import { saveIdeaWithReport } from "@/services/db";
+import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -26,7 +28,7 @@ export const Route = createFileRoute("/dashboard")({
 
 function Dashboard() {
   const navigate = useNavigate();
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const { user, loading: authLoading, signOut } = useAuth();
   const [idea, setIdea] = useState("");
   const [tier, setTier] = useState<"Tier 1" | "Tier 2" | "Tier 3">("Tier 1");
   const [audience, setAudience] = useState<"B2B" | "B2C">("B2C");
@@ -34,16 +36,15 @@ function Dashboard() {
   const [report, setReport] = useState<GeneratedOutputs | null>(null);
 
   useEffect(() => {
-    const u = auth.getUser();
-    if (!u) navigate({ to: "/auth" });
-    else setUser(u);
-  }, [navigate]);
+    if (!authLoading && !user) navigate({ to: "/auth" });
+  }, [user, authLoading, navigate]);
 
   const handleGenerate = async () => {
     if (idea.trim().length < 15) {
       toast.error("Describe your idea in at least 15 characters.");
       return;
     }
+    if (!user) return;
     setLoading(true);
     setReport(null);
     try {
@@ -53,7 +54,17 @@ function Dashboard() {
         b2b_or_b2c: audience,
       });
       setReport(r);
-      toast.success("Report generated!");
+      try {
+        await saveIdeaWithReport(
+          user.id,
+          { raw_text_input: idea, target_city_tier: tier, b2b_or_b2c: audience },
+          r as unknown as Record<string, unknown>,
+        );
+        toast.success("Report generated and saved!");
+      } catch (err) {
+        console.error("save failed", err);
+        toast.success("Report generated (not saved)");
+      }
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Generation failed. Try again.";
       toast.error(msg);
@@ -68,7 +79,6 @@ function Dashboard() {
       toast.info("Building your PDF…");
       const { buildReportPdf } = await import("@/utils/report-pdf");
       const bytes = await buildReportPdf(report, idea);
-      // Convert to a fresh ArrayBuffer to satisfy Blob's BlobPart typing
       const buf = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
       const blob = new Blob([buf], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
@@ -87,12 +97,13 @@ function Dashboard() {
     }
   };
 
-  const handleLogout = () => {
-    auth.signOut();
+  const handleLogout = async () => {
+    await signOut();
     navigate({ to: "/" });
   };
 
-  if (!user) return null;
+  if (authLoading || !user) return null;
+  const displayName = (user.user_metadata?.name as string) || user.email?.split("@")[0] || "founder";
 
   return (
     <div className="min-h-screen bg-muted/20">
@@ -102,15 +113,20 @@ function Dashboard() {
         <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
-              Welcome back, <span className="text-gradient">{user.name}</span>
+              Welcome back, <span className="text-gradient">{displayName}</span>
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
               Let's validate your next big idea — the Indian way.
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={handleLogout}>
-            <LogOut className="mr-1.5 h-4 w-4" /> Sign out
-          </Button>
+          <div className="flex gap-2">
+            <Button asChild variant="outline" size="sm">
+              <Link to="/admin"><Database className="mr-1.5 h-4 w-4" /> My data</Link>
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleLogout}>
+              <LogOut className="mr-1.5 h-4 w-4" /> Sign out
+            </Button>
+          </div>
         </div>
 
         <Card className="shadow-soft">
@@ -171,7 +187,6 @@ function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Results */}
         <div className="mt-8">
           {loading && <LoadingSkeleton />}
           {report && (
@@ -200,8 +215,7 @@ function EmptyState() {
         </div>
         <h3 className="text-lg font-semibold">Your report will appear here</h3>
         <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-          Fill in your idea above and hit "Generate Report". You'll get a 6-tab dashboard:
-          Market, Competitors, Product, Brand, Data, and Content.
+          Fill in your idea above and hit "Generate Report". Saved reports show up under <Link to="/admin" className="underline">My data</Link>.
         </p>
       </CardContent>
     </Card>
@@ -216,21 +230,7 @@ function LoadingSkeleton() {
           <Loader2 className="h-5 w-5 animate-spin text-teal" />
           <span className="font-medium">Analyzing Indian market data…</span>
         </div>
-        <div className="space-y-3">
-          {["Scanning competitors", "Modeling unit economics", "Drafting brand & content"].map((t, i) => (
-            <div key={t} className="flex items-center gap-3 text-sm text-muted-foreground">
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-border">
-                <div
-                  className="h-full bg-gradient-primary"
-                  style={{ width: `${[70, 45, 25][i]}%`, animation: "pulse 2s ease-in-out infinite" }}
-                />
-              </div>
-              <span className="w-44 shrink-0 text-right">{t}</span>
-            </div>
-          ))}
-        </div>
       </CardContent>
     </Card>
   );
 }
-
