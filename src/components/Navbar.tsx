@@ -1,18 +1,13 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Moon, Sun, Rocket } from "lucide-react";
+import { Moon, Sun, Rocket, Database } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/hooks/use-theme";
-import { auth } from "@/utils/api";
-import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
 
 export function Navbar() {
   const { theme, toggle } = useTheme();
   const navigate = useNavigate();
-  const [user, setUser] = useState(auth.getUser());
-
-  useEffect(() => {
-    setUser(auth.getUser());
-  }, []);
+  const { user, signOut } = useAuth();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 glass">
@@ -33,7 +28,15 @@ export function Navbar() {
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
           {user ? (
-            <Button onClick={() => navigate({ to: "/dashboard" })}>Dashboard</Button>
+            <>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/admin"><Database className="mr-1 h-4 w-4" /> Data</Link>
+              </Button>
+              <Button onClick={() => navigate({ to: "/dashboard" })}>Dashboard</Button>
+              <Button variant="ghost" size="sm" onClick={async () => { await signOut(); navigate({ to: "/" }); }}>
+                Sign out
+              </Button>
+            </>
           ) : (
             <>
               <Button variant="ghost" onClick={() => navigate({ to: "/auth" })}>Sign in</Button>
