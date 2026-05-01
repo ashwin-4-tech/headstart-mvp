@@ -14,16 +14,158 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      generated_reports: {
+        Row: {
+          brand: Json
+          competitors: Json
+          content: Json
+          created_at: string
+          data: Json
+          generated_at: string
+          id: string
+          idea_id: string
+          market_data: Json
+          product: Json
+          swadeshi_stack: Json
+          user_id: string
+        }
+        Insert: {
+          brand?: Json
+          competitors?: Json
+          content?: Json
+          created_at?: string
+          data?: Json
+          generated_at?: string
+          id?: string
+          idea_id: string
+          market_data?: Json
+          product?: Json
+          swadeshi_stack?: Json
+          user_id: string
+        }
+        Update: {
+          brand?: Json
+          competitors?: Json
+          content?: Json
+          created_at?: string
+          data?: Json
+          generated_at?: string
+          id?: string
+          idea_id?: string
+          market_data?: Json
+          product?: Json
+          swadeshi_stack?: Json
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generated_reports_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "startup_ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          budget_range: string | null
+          created_at: string
+          email: string | null
+          id: string
+          industry_focus: string | null
+          name: string | null
+          preferred_language: string | null
+          updated_at: string
+        }
+        Insert: {
+          budget_range?: string | null
+          created_at?: string
+          email?: string | null
+          id: string
+          industry_focus?: string | null
+          name?: string | null
+          preferred_language?: string | null
+          updated_at?: string
+        }
+        Update: {
+          budget_range?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          industry_focus?: string | null
+          name?: string | null
+          preferred_language?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      startup_ideas: {
+        Row: {
+          b2b_or_b2c: string
+          created_at: string
+          id: string
+          raw_text_input: string
+          target_city_tier: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          b2b_or_b2c?: string
+          created_at?: string
+          id?: string
+          raw_text_input: string
+          target_city_tier?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          b2b_or_b2c?: string
+          created_at?: string
+          id?: string
+          raw_text_input?: string
+          target_city_tier?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +292,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
