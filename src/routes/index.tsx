@@ -153,14 +153,24 @@ function Pillars() {
         </p>
       </div>
       <div className="mt-14 grid gap-5 md:grid-cols-3 lg:grid-cols-5">
-        {pillars.map(({ icon: Icon, title, desc }) => (
-          <Card key={title} className="group shadow-soft transition-all hover:-translate-y-1 hover:shadow-glow">
-            <CardContent className="p-6">
-              <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-primary text-primary-foreground">
+        {pillars.map(({ icon: Icon, title, desc }, i) => (
+          <Card
+            key={title}
+            className="group relative overflow-hidden border-border/60 bg-card/80 shadow-soft backdrop-blur-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-teal/40 hover:shadow-glow"
+          >
+            {/* glow accent */}
+            <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-primary opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-30" />
+            {/* top accent bar */}
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-teal/60 to-transparent opacity-60" />
+            <CardContent className="relative p-6">
+              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-primary text-primary-foreground shadow-glow ring-1 ring-white/20 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
                 <Icon className="h-5 w-5" />
               </div>
-              <h3 className="font-semibold">{title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
+              <div className="mb-1 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+                0{i + 1}
+              </div>
+              <h3 className="font-semibold tracking-tight">{title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{desc}</p>
             </CardContent>
           </Card>
         ))}
