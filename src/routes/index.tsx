@@ -283,35 +283,61 @@ function Pricing() {
         <h2 className="text-3xl font-bold md:text-4xl">Pricing built for Indian founders</h2>
         <p className="mt-4 text-muted-foreground">Start free. Upgrade when you raise.</p>
       </div>
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-3 md:items-stretch">
         {tiers.map((t) => (
           <Card
             key={t.name}
-            className={`relative shadow-soft ${t.highlight ? "border-teal/60 shadow-glow" : ""}`}
+            className={`group relative overflow-hidden border-border/60 bg-card/80 shadow-soft backdrop-blur-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-glow ${
+              t.highlight
+                ? "border-teal/60 shadow-glow md:scale-[1.03] md:hover:scale-[1.05]"
+                : "hover:border-teal/40"
+            }`}
           >
             {t.highlight && (
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-primary px-3 py-1 text-xs font-medium text-primary-foreground">
+              <>
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-saffron/10 via-transparent to-teal/10" />
+                <div className="pointer-events-none absolute -inset-x-10 -top-20 h-40 bg-gradient-primary opacity-25 blur-3xl" />
+              </>
+            )}
+            {!t.highlight && (
+              <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-gradient-primary opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-20" />
+            )}
+            <div
+              className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent to-transparent ${
+                t.highlight ? "via-saffron/80" : "via-teal/40"
+              }`}
+            />
+            {t.highlight && (
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-primary px-3 py-1 text-xs font-medium text-primary-foreground shadow-glow ring-1 ring-white/20">
                 Most popular
               </div>
             )}
-            <CardContent className="p-7">
-              <div className="text-sm font-medium text-muted-foreground">{t.name}</div>
+            <CardContent className="relative p-7">
+              <div className="flex items-center gap-2">
+                <div className={`text-sm font-semibold uppercase tracking-wider ${t.highlight ? "text-teal" : "text-muted-foreground"}`}>
+                  {t.name}
+                </div>
+                {t.highlight && <Sparkles className="h-3.5 w-3.5 text-saffron" />}
+              </div>
               <div className="mt-3 flex items-baseline gap-1">
-                <span className="text-4xl font-bold">{t.price}</span>
+                <span className={`text-5xl font-bold tracking-tight ${t.highlight ? "text-gradient" : ""}`}>{t.price}</span>
                 <span className="text-sm text-muted-foreground">{t.period}</span>
               </div>
               <p className="mt-2 text-sm text-muted-foreground">{t.desc}</p>
               <Button
-                className={`mt-5 w-full ${t.highlight ? "bg-gradient-primary text-primary-foreground hover:opacity-90" : ""}`}
+                className={`mt-6 w-full ${t.highlight ? "bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-90" : ""}`}
                 variant={t.highlight ? "default" : "outline"}
                 onClick={() => navigate({ to: "/auth" })}
               >
-                {t.cta}
+                {t.cta} <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
-              <ul className="mt-6 space-y-2 text-sm">
+              <div className="my-6 h-px w-full bg-gradient-to-r from-transparent via-border to-transparent" />
+              <ul className="space-y-2.5 text-sm">
                 {t.features.map((f) => (
                   <li key={f} className="flex items-start gap-2">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-teal" />
+                    <span className={`mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${t.highlight ? "bg-gradient-primary" : "bg-teal/15"}`}>
+                      <Check className={`h-3 w-3 ${t.highlight ? "text-primary-foreground" : "text-teal"}`} />
+                    </span>
                     <span>{f}</span>
                   </li>
                 ))}
