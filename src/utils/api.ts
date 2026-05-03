@@ -33,6 +33,7 @@ export interface Competitor {
   monthly_users: string;
   pricing: string;
   weakness: string;
+  url?: string;
 }
 
 export interface ProductPlan {

@@ -29,7 +29,7 @@ export function Footer() {
               <Github className="h-4 w-4" />
             </a>
             <a
-              href="https://www.linkedin.com/in/b-ashwin"
+              href="https://www.linkedin.com/in/ashwin/"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Ashwin's LinkedIn profile"

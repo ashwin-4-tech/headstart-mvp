@@ -1,4 +1,4 @@
-import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
+import { PDFDocument, StandardFonts, rgb, PDFName, PDFArray, PDFString, PDFNumber, type PDFFont, type PDFPage } from "pdf-lib";
 import type { GeneratedOutputs } from "@/utils/api";
 
 // Brand palette (oklch-equivalent fallbacks in RGB 0-1)
@@ -241,6 +241,33 @@ function hexToRgb(hex: string) {
   return rgb(r, g, b);
 }
 
+function addLinkAnnotation(ctx: Ctx, x: number, y: number, w: number, h: number, url: string) {
+  const annot = ctx.doc.context.obj({
+    Type: "Annot",
+    Subtype: "Link",
+    Rect: [x, y, x + w, y + h],
+    Border: [0, 0, 0],
+    A: { Type: "Action", S: "URI", URI: PDFString.of(url) },
+  });
+  const ref = ctx.doc.context.register(annot);
+  let annots = ctx.page.node.lookup(PDFName.of("Annots"), PDFArray);
+  if (!annots) {
+    annots = ctx.doc.context.obj([]) as PDFArray;
+    ctx.page.node.set(PDFName.of("Annots"), annots);
+  }
+  annots.push(ref);
+  void PDFNumber;
+}
+
+function drawLink(ctx: Ctx, text: string, x: number, y: number, size: number, font: PDFFont, url: string, color = TEAL) {
+  const t = sanitize(text);
+  const w = font.widthOfTextAtSize(t, size);
+  ctx.page.drawText(t, { x, y, size, font, color });
+  ctx.page.drawLine({ start: { x, y: y - 1 }, end: { x: x + w, y: y - 1 }, thickness: 0.5, color });
+  addLinkAnnotation(ctx, x, y - 2, w, size + 2, url);
+  return w;
+}
+
 export async function buildReportPdf(report: GeneratedOutputs, ideaText: string): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
   const font = await doc.embedFont(StandardFonts.Helvetica);
@@ -319,10 +346,15 @@ export async function buildReportPdf(report: GeneratedOutputs, ideaText: string)
       x: MARGIN_X, y: cardTop - cardHc, width: CONTENT_W, height: cardHc,
       color: WHITE, borderColor: LINE, borderWidth: 0.6,
     });
-    ctx.page.drawText(sanitize(c.name), {
-      x: MARGIN_X + 14, y: cardTop - 22, size: 13, font: bold, color: NAVY,
-    });
-    const nameW = bold.widthOfTextAtSize(sanitize(c.name), 13);
+    let nameW: number;
+    if (c.url) {
+      nameW = drawLink(ctx, c.name, MARGIN_X + 14, cardTop - 22, 13, bold, c.url, NAVY);
+    } else {
+      ctx.page.drawText(sanitize(c.name), {
+        x: MARGIN_X + 14, y: cardTop - 22, size: 13, font: bold, color: NAVY,
+      });
+      nameW = bold.widthOfTextAtSize(sanitize(c.name), 13);
+    }
     drawBadge(ctx, MARGIN_X + 14 + nameW + 10, cardTop - 22, c.type, c.type === "Unicorn" ? SAFFRON : TEAL);
 
     const rowY = cardTop - 42;
@@ -386,7 +418,11 @@ export async function buildReportPdf(report: GeneratedOutputs, ideaText: string)
       color: WHITE, borderColor: LINE, borderWidth: 0.5,
     });
     ctx.page.drawRectangle({ x: MARGIN_X, y: cardTop - 48, width: 3, height: 48, color: TEAL });
-    ctx.page.drawText(sanitize(s.name), { x: MARGIN_X + 12, y: cardTop - 14, size: 11, font: bold, color: NAVY });
+    if (s.url) {
+      drawLink(ctx, s.name, MARGIN_X + 12, cardTop - 14, 11, bold, s.url, NAVY);
+    } else {
+      ctx.page.drawText(sanitize(s.name), { x: MARGIN_X + 12, y: cardTop - 14, size: 11, font: bold, color: NAVY });
+    }
     ctx.page.drawText(sanitize(`${s.category} • ${s.price}`), { x: MARGIN_X + 12, y: cardTop - 26, size: 8, font, color: MUTED });
     const whyLines = wrapText(s.why, font, 9, CONTENT_W - 24);
     ctx.page.drawText(whyLines[0] ?? "", { x: MARGIN_X + 12, y: cardTop - 39, size: 9, font, color: INK });
