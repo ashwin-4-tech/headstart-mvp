@@ -370,22 +370,94 @@ function BrandTab({ report }: { report: GeneratedOutputs }) {
   );
 }
 
+function MetricLabel({ label, hint }: { label: string; hint: string }) {
+  return (
+    <TooltipProvider delayDuration={150}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="inline-flex cursor-help items-center gap-1 text-xs uppercase tracking-wide text-muted-foreground">
+            {label}
+            <Info className="h-3 w-3 opacity-60" />
+          </span>
+        </TooltipTrigger>
+        <TooltipContent className="max-w-[240px] text-xs leading-relaxed">{hint}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
+const KPI_HINTS: Record<string, string> = {
+  CAC: "Customer Acquisition Cost — how much you spend on ads, sales and referrals to get one paying user.",
+  LTV: "Lifetime Value — the total rupees one customer pays you before they churn.",
+  ARPU: "Average Revenue Per User — what each user pays you in a single month.",
+  MRR: "Monthly Recurring Revenue — predictable rupees you collect every month from subscriptions.",
+  ARR: "Annual Recurring Revenue — MRR multiplied by 12. Investors care about this number.",
+  CHURN: "Churn — the % of customers who cancel each month. Lower is better.",
+  DAU: "Daily Active Users — how many people open your app every day.",
+  MAU: "Monthly Active Users — how many people open your app at least once a month.",
+  GMV: "Gross Merchandise Value — total rupees of stuff sold on your platform (not your revenue).",
+  PAYBACK: "Payback period — how many months until one customer earns back what you spent to acquire them.",
+};
+
+function hintFor(label: string): string | undefined {
+  const key = label.toUpperCase().replace(/[^A-Z]/g, "");
+  for (const k of Object.keys(KPI_HINTS)) if (key.includes(k)) return KPI_HINTS[k];
+  return undefined;
+}
+
 function DataTab({ report }: { report: GeneratedOutputs }) {
+  const ue = report.data.unit_economics;
+  const ratio = ue.cac > 0 ? ue.ltv / ue.cac : 0;
   return (
     <div>
-      <SectionHeader title="Data & unit economics" subtitle="The numbers that decide whether this works." />
+      <SectionHeader
+        title="Data & unit economics"
+        subtitle="The numbers that decide whether this works — explained in plain English."
+      />
+
+      <Card className="mb-5 border-dashed bg-muted/30">
+        <CardContent className="space-y-2 p-5 text-sm">
+          <p>
+            <strong className="text-foreground">In one line:</strong> for every{" "}
+            <span className="font-semibold text-saffron">₹{ue.cac.toLocaleString("en-IN")}</span> you
+            spend to win a customer, they pay you back{" "}
+            <span className="font-semibold text-teal">₹{ue.ltv.toLocaleString("en-IN")}</span> over
+            their lifetime — a <strong>{ratio.toFixed(2)}×</strong> return.
+          </p>
+          <p className="text-muted-foreground">
+            {ratio >= 3
+              ? "That's a healthy ratio — investors look for at least 3×. Your model has room to grow."
+              : "That's below the 3× investors expect. Either reduce acquisition cost (WhatsApp, referrals) or extend customer lifetime."}{" "}
+            You'll break even on each customer in roughly{" "}
+            <strong>{ue.payback_months} months</strong>.
+          </p>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-4 md:grid-cols-4">
-        {report.data.kpis.map((k) => (
-          <div key={k.label} className="rounded-xl border bg-muted/40 p-4">
-            <div className="text-xs uppercase tracking-wide text-muted-foreground">{k.label}</div>
-            <div className="mt-1 text-xl font-bold">{k.value}</div>
-          </div>
-        ))}
+        {report.data.kpis.map((k) => {
+          const hint = hintFor(k.label);
+          return (
+            <div key={k.label} className="rounded-xl border bg-muted/40 p-4">
+              {hint ? (
+                <MetricLabel label={k.label} hint={hint} />
+              ) : (
+                <div className="text-xs uppercase tracking-wide text-muted-foreground">{k.label}</div>
+              )}
+              <div className="mt-1 text-xl font-bold">{k.value}</div>
+            </div>
+          );
+        })}
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Card>
-          <CardHeader><CardTitle className="text-base">Conversion funnel</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-base">Conversion funnel</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              How 100 visitors travel from "just browsing" to "paying customer".
+            </p>
+          </CardHeader>
           <CardContent className="space-y-3">
             {report.data.funnel.map((f, i) => {
               const widths = [100, 70, 45, 28];
