@@ -1,4 +1,4 @@
-import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
+import { PDFDocument, StandardFonts, rgb, PDFName, PDFArray, PDFString, PDFNumber, type PDFFont, type PDFPage } from "pdf-lib";
 import type { GeneratedOutputs } from "@/utils/api";
 
 // Brand palette (oklch-equivalent fallbacks in RGB 0-1)
