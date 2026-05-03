@@ -346,10 +346,15 @@ export async function buildReportPdf(report: GeneratedOutputs, ideaText: string)
       x: MARGIN_X, y: cardTop - cardHc, width: CONTENT_W, height: cardHc,
       color: WHITE, borderColor: LINE, borderWidth: 0.6,
     });
-    ctx.page.drawText(sanitize(c.name), {
-      x: MARGIN_X + 14, y: cardTop - 22, size: 13, font: bold, color: NAVY,
-    });
-    const nameW = bold.widthOfTextAtSize(sanitize(c.name), 13);
+    let nameW: number;
+    if (c.url) {
+      nameW = drawLink(ctx, c.name, MARGIN_X + 14, cardTop - 22, 13, bold, c.url, NAVY);
+    } else {
+      ctx.page.drawText(sanitize(c.name), {
+        x: MARGIN_X + 14, y: cardTop - 22, size: 13, font: bold, color: NAVY,
+      });
+      nameW = bold.widthOfTextAtSize(sanitize(c.name), 13);
+    }
     drawBadge(ctx, MARGIN_X + 14 + nameW + 10, cardTop - 22, c.type, c.type === "Unicorn" ? SAFFRON : TEAL);
 
     const rowY = cardTop - 42;
@@ -413,7 +418,11 @@ export async function buildReportPdf(report: GeneratedOutputs, ideaText: string)
       color: WHITE, borderColor: LINE, borderWidth: 0.5,
     });
     ctx.page.drawRectangle({ x: MARGIN_X, y: cardTop - 48, width: 3, height: 48, color: TEAL });
-    ctx.page.drawText(sanitize(s.name), { x: MARGIN_X + 12, y: cardTop - 14, size: 11, font: bold, color: NAVY });
+    if (s.url) {
+      drawLink(ctx, s.name, MARGIN_X + 12, cardTop - 14, 11, bold, s.url, NAVY);
+    } else {
+      ctx.page.drawText(sanitize(s.name), { x: MARGIN_X + 12, y: cardTop - 14, size: 11, font: bold, color: NAVY });
+    }
     ctx.page.drawText(sanitize(`${s.category} • ${s.price}`), { x: MARGIN_X + 12, y: cardTop - 26, size: 8, font, color: MUTED });
     const whyLines = wrapText(s.why, font, 9, CONTENT_W - 24);
     ctx.page.drawText(whyLines[0] ?? "", { x: MARGIN_X + 12, y: cardTop - 39, size: 9, font, color: INK });
