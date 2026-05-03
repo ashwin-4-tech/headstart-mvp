@@ -154,7 +154,21 @@ function CompetitorsTab({ report }: { report: GeneratedOutputs }) {
           <TableBody>
             {report.competitors.map((c) => (
               <TableRow key={c.name}>
-                <TableCell className="font-medium">{c.name}</TableCell>
+                <TableCell className="font-medium">
+                  {c.url ? (
+                    <a
+                      href={c.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-primary underline-offset-4 hover:underline"
+                    >
+                      {c.name}
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
+                  ) : (
+                    c.name
+                  )}
+                </TableCell>
                 <TableCell>
                   <Badge
                     variant="outline"
